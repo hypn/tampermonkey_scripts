@@ -87,25 +87,24 @@
         var buttons = document.getElementsByClassName("action-wish")[0];
         var serval = document.getElementById("serval-button");
         if (buttons && !serval) {
+            // find the sku
+            var sku = false;
+            var anchors = document.getElementsByTagName("a");
+            for (var i=0; i<anchors.length; i++) {
+                var temp = anchors[i];
 
-          // find the sku
-          var sku = false;
-          var anchors = document.getElementsByTagName("a");
-          for (var i=0; i<anchors.length; i++) {
-              var temp = anchors[i];
+                if ((temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1)) {
+                    let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
+                    let possibleSku = parts[parts.length - 1];
+                    if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
+                        sku = parts[parts.length - 1];
+                    }
+                }
+            }
 
-              if (temp.innerText.indexOf(' Review') > -1) {
-                  let parts = temp.href.split('/');
-                  let possibleSku = parts[parts.length - 1];
-                  if (possibleSku.indexOf('PL') === 0) {
-                      sku = parts[parts.length - 1];
-                  }
-              }
-          }
-
-          if (sku) {
-              buttons.innerHTML = buttons.innerHTML + '<br /><a id="serval-button" href="https://www.servaltracker.com/products/' + sku + '/" class="button shade-gray" target="_blank" style="width: 100%">ServalTracker &gt;</a>';
-          }
+            if (sku) {
+                buttons.innerHTML = buttons.innerHTML + '<br /><a id="serval-button" href="https://www.servaltracker.com/products/' + sku + '/" class="button shade-gray" target="_blank" style="width: 100%">ServalTracker &gt;</a>';
+            }
         }
 
         // stop trying to inject stuff
