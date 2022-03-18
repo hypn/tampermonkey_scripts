@@ -89,12 +89,12 @@
         if (buttons && !serval) {
 
           // find the sku
-          let sku = false;
+          var sku = false;
           var anchors = document.getElementsByTagName("a");
           for (var i=0; i<anchors.length; i++) {
               var temp = anchors[i];
 
-              if (temp.innerText.indexOf('Reviews') > -1) {
+              if (temp.innerText.indexOf(' Review') > -1) {
                   let parts = temp.href.split('/');
                   let possibleSku = parts[parts.length - 1];
                   if (possibleSku.indexOf('PL') === 0) {
