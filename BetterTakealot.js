@@ -31,7 +31,7 @@
             return (a.reviews > b.reviews) ? 1 : ((b.reviews > a.reviews) ? -1 : 0)
         }).reverse();
 
-        // find the partent container
+        // find the parent container
         var parent = sorted[0].elem.parentElement;
 
         // remove all of the results
@@ -58,27 +58,53 @@
         window.scrollBy(-1,-1);
     }
 
+    window.cheaperThan = function() {
+      var amount = prompt("Find items cheaper than? (amount in rands)");
+      if (amount > '') {
+        if (isNaN(parseInt(amount))) {
+          alert("Invalid amount - enter only numbers");
+        } else {
+          var url = new URL(window.location.href);
+          var search_params = url.searchParams;
+          search_params.set('filter', 'Price:*-' + amount.toString());
+          url.search = search_params.toString();
+          window.location.href = url.toString();
+        }
+      }
+    }
+
     var attempts = 0;
     var interval = setInterval(function() {
-        // inject "Most Reviews" link
+        // inject search results / categories links
         var elem = document.getElementsByClassName("searchSortOrder_searchDrop")[0]
         if (elem) {
+            // container
             var myLabel = document.createElement("label");
-            myLabel.onclick = window.sortByMostReviews
             var myDiv = document.createElement("div");
             myDiv.className = "label-text"
             var mySpan = document.createElement("span");
-            var myA = document.createElement("a");
+
+            // "most reviews"
+            var mostReviews = document.createElement("a");
+            mostReviews.href = "javascript:window.sortByMostReviews()";
             var myStrong = document.createElement("strong");
             myStrong.innerText = "Most Reviews"
+            mostReviews.appendChild(myStrong);
 
-            myA.appendChild(myStrong);
-            mySpan.appendChild(myA);
+            // "cheaper than"
+            var cheaperThan = document.createElement("a");
+            cheaperThan.href = "javascript:window.cheaperThan()";
+            cheaperThan.innerText = "Cheaper than"
+
+            // inject them
+            mySpan.appendChild(cheaperThan);
+            mySpan.innerHTML += "&nbsp;&nbsp;|&nbsp;&nbsp;";
+            mySpan.appendChild(mostReviews);
             mySpan.innerHTML += "&nbsp;&nbsp;|";
             myDiv.appendChild(mySpan);
             myLabel.appendChild(myDiv);
-
             elem.prepend(myLabel);
+
             clearInterval(interval);
             return;
         }
@@ -103,7 +129,16 @@
             }
 
             if (sku) {
-                buttons.innerHTML = buttons.innerHTML + '<br /><a id="serval-button" href="https://www.servaltracker.com/products/' + sku + '/" class="button shade-gray" target="_blank" style="width: 100%">ServalTracker &gt;</a>';
+                var servalLink = document.createElement("a");
+                servalLink.id = "serval-button"
+                servalLink.target = "_blank";
+                servalLink.href = "https://www.servaltracker.com/products/" + sku + "/";
+                servalLink.innerHTML = 'Serval Tracker &gt;';
+                servalLink.classList.add("button");
+                servalLink.classList.add("shade-gray");
+                servalLink.style.width = "100%";
+                servalLink.style.marginTop = "8px";
+                buttons.appendChild(servalLink);
             }
         }
 
