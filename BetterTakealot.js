@@ -84,18 +84,28 @@
         }
 
         // inject Serval Tracker button
-        elem = document.getElementsByClassName("action-wish")[0]
-        if (elem) {
-          let temp = document.querySelectorAll('a[data-react-link=true]')[0];
-          if (temp) {
-              let parts = temp.href.split('/');
-              let sku = parts[parts.length - 1];
-              if (sku > '') {
-                elem.innerHTML = elem.innerHTML + '<br /><a href="https://www.servaltracker.com/products/' + sku + '/" class="button shade-gray" target="_blank" style="width: 100%">ServalTracker &gt;</a>';
+        var buttons = document.getElementsByClassName("action-wish")[0];
+        var serval = document.getElementById("serval-button");
+        if (buttons && !serval) {
+
+          // find the sku
+          let sku = false;
+          var anchors = document.getElementsByTagName("a");
+          for (var i=0; i<anchors.length; i++) {
+              var temp = anchors[i];
+
+              if (temp.innerText.indexOf('Reviews') > -1) {
+                  let parts = temp.href.split('/');
+                  let possibleSku = parts[parts.length - 1];
+                  if (possibleSku.indexOf('PL') === 0) {
+                      sku = parts[parts.length - 1];
+                  }
               }
           }
-          clearInterval(interval);
-          return;
+
+          if (sku) {
+              buttons.innerHTML = buttons.innerHTML + '<br /><a id="serval-button" href="https://www.servaltracker.com/products/' + sku + '/" class="button shade-gray" target="_blank" style="width: 100%">ServalTracker &gt;</a>';
+          }
         }
 
         // stop trying to inject stuff
