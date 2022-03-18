@@ -2,8 +2,8 @@
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Adds some new features to takealot.com
+// @author       Hypn
 // @match        https://www.takealot.com/*
 // @icon         https://www.google.com/s2/favicons?domain=takealot.com
 // @grant        none
@@ -59,14 +59,14 @@
     }
 
     window.cheaperThan = function() {
-      var amount = prompt("Find items cheaper than? (amount in rands)");
+      var amount = prompt("Find items cheaper than (and including)? (amount in rands)");
       if (amount > '') {
         if (isNaN(parseInt(amount))) {
           alert("Invalid amount - enter only numbers");
         } else {
           var url = new URL(window.location.href);
           var search_params = url.searchParams;
-          search_params.set('filter', 'Price:*-' + amount.toString());
+          search_params.set('filter', 'Price:*-' + parseInt(amount).toString());
           url.search = search_params.toString();
           window.location.href = url.toString();
         }
