@@ -119,7 +119,7 @@
             for (var i=0; i<anchors.length; i++) {
                 var temp = anchors[i];
 
-                if ((temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1)) {
+                if ((temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1) && (temp.href.indexOf('/description') > -1)) {
                     let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
                     let possibleSku = parts[parts.length - 1];
                     if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
