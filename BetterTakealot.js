@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.1
+// @version      0.2
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -149,4 +149,13 @@
         }
     }, 1000);
 
+    setInterval(function() {
+        var sponsered = document.querySelectorAll('[data-ref="sponsored-ad-text"]');
+        for (var i=0; i<sponsered.length; i++) {
+            var elem = sponsered[i].parentElement.parentElement.parentElement.parentElement.parentElement;
+            if (elem) {
+                elem.style.opacity = "20%"
+            }
+        }
+    }, 1500)
 })();
