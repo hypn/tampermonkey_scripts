@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.2
+// @version      0.1
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -154,7 +154,8 @@
         for (var i=0; i<sponsered.length; i++) {
             var elem = sponsered[i].parentElement.parentElement.parentElement.parentElement.parentElement;
             if (elem) {
-                elem.style.opacity = "20%"
+                elem.style.transition = "opacity 200ms ease-in-out";
+                elem.style.opacity = "20%";
             }
         }
     }, 1500)
