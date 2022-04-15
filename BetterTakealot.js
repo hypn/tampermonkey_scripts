@@ -28,6 +28,7 @@
                 reviews: elem.getElementsByClassName("rating-module_review-count_3g6zO")[0] ? parseInt(elem.getElementsByClassName("rating-module_review-count_3g6zO")[0].innerText.replace(' (', '').replace(')', '')) : 0
             });
         }
+        
         var sorted = array.sort(function(a, b) {
             return (a.reviews > b.reviews) ? 1 : ((b.reviews > a.reviews) ? -1 : 0)
         }).reverse();
@@ -108,6 +109,24 @@
         return button;
     }
 
+    // attempts to find the sku for the current product page
+    function findSku() {
+        var sku = false;
+        var anchors = document.getElementsByTagName("a");
+        for (var i=0; i<anchors.length; i++) {
+            var temp = anchors[i];
+
+            if ((temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1) && (temp.href.indexOf('/description') > -1)) {
+                let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
+                let possibleSku = parts[parts.length - 1].split("?")[0];
+                if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
+                    sku = parts[parts.length - 1];
+                }
+            }
+        }
+        return sku;
+    }
+
     // main loop to handle dynamic page updates,
     var interval = setInterval(function() {
         // inject search results / categories links
@@ -146,32 +165,32 @@
 
         // determine serval button states (including which page the user's on)
         var serval = document.getElementById("serval-button");
+        var variantProductPage = (document.getElementsByClassName("buybox-actions-module_variants-actions-container_lgTZH").length > 0);
         var wishlistPage = (document.getElementsByClassName("detail-module_wishlist-wrapper_3alXg").length > 0);
         var cartPage = (document.getElementsByClassName("cart").length > 0);
 
-        // inject Serval Tracker button on the Product page
+        // inject Serval Tracker button on the Product page (which has a "wish" action button on it)
+        var sku = false;
         var buttons = document.getElementsByClassName("action-wish")[0];
         if (buttons && !serval) {
-            var sku = false;
-            var anchors = document.getElementsByTagName("a");
-            for (var i=0; i<anchors.length; i++) {
-                var temp = anchors[i];
-
-                if ((temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1) && (temp.href.indexOf('/description') > -1)) {
-                    let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
-                    let possibleSku = parts[parts.length - 1];
-                    if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
-                        sku = parts[parts.length - 1];
-                    }
-                }
-            }
-
+            sku = findSku();
             if (sku) {
                 var servalButton = makeServalButton(sku);
                 // try and line up the serval icon with the wishlist heart icon:
                 servalButton.style.paddingRight = "18%"
                 buttons.appendChild(servalButton);
             }
+        } else {
+          // variable-size item (eg: clothing)?
+          if (variantProductPage && !document.getElementById("serval-variant-button")) {
+            sku = findSku();
+            if (sku) {
+                var destination = document.getElementsByClassName("buybox-actions")[0].firstChild;
+                var servalVariantButton = makeServalButton(sku);
+                servalVariantButton.id = "serval-variant-button";
+                destination.appendChild(servalVariantButton);
+            }
+          }
         }
 
         // inject Serval Tracker button on the Wishlist page
