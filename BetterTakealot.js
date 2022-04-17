@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.3
+// @version      0.4
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -28,7 +28,7 @@
                 reviews: elem.getElementsByClassName("rating-module_review-count_3g6zO")[0] ? parseInt(elem.getElementsByClassName("rating-module_review-count_3g6zO")[0].innerText.replace(' (', '').replace(')', '')) : 0
             });
         }
-        
+
         var sorted = array.sort(function(a, b) {
             return (a.reviews > b.reviews) ? 1 : ((b.reviews > a.reviews) ? -1 : 0)
         }).reverse();
@@ -216,11 +216,13 @@
                 product.parentElement.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.appendChild(button);
             });
         }
+    }, 1000)
 
-        // hide sponsored items
-        var sponsered = document.querySelectorAll('[data-ref="sponsored-ad-text"]');
-        for (var j=0; j<sponsered.length; j++) {
-            var sponsoredElem = sponsered[j].parentElement.parentElement.parentElement.parentElement.parentElement;
+    // hide sponsored items
+    var sponsoredInterval = setInterval(function() {
+        var sponsored = document.querySelectorAll('[data-ref="sponsored-ad-text"]');
+        for (var j=0; j<sponsored.length; j++) {
+            var sponsoredElem = sponsored[j].parentElement.parentElement.parentElement.parentElement.parentElement;
             if (sponsoredElem) {
                 sponsoredElem.style.transition = "opacity 200ms ease-in-out";
                 sponsoredElem.style.opacity = "20%";
