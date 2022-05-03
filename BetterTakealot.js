@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.4
+// @version      0.5
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -109,6 +109,18 @@
         return button;
     }
 
+    function makeRoundServalButton(sku) {
+        var roundButton = document.createElement("button");
+        roundButton.classList.add("button");
+        roundButton.classList.add("ghost");
+        roundButton.classList.add("wish");
+        roundButton.classList.add("expanded");
+        roundButton.classList.add("icon-only");
+        roundButton.classList.add("add-to-wishlist-button-module_wishlist-button_1oKrg");
+        roundButton.innerHTML = '<a href="https://www.servaltracker.com/products/' + sku + '/" target="_blank"><img src="https://www.google.com/s2/favicons?domain=servaltracker.com"></a>';
+        return roundButton;
+    }
+
     // attempts to find the sku for the current product page
     function findSku() {
         var sku = false;
@@ -130,8 +142,11 @@
     // main loop to handle dynamic page updates,
     var interval = setInterval(function() {
         // inject search results / categories links
-        var elem = document.getElementsByClassName("searchSortOrder_searchDrop")[0]
-        if (elem) {
+        var topRightNav = document.getElementsByClassName("searchSortOrder_searchDrop")[0]
+        var mostReviewsLink = (document.getElementsByClassName("mostReviews").length > 0);
+
+        // add "Most Reviews" and "Cheaper Than" links (if not already on the page)
+        if (topRightNav && !mostReviewsLink) {
             // container
             var myLabel = document.createElement("label");
             var myDiv = document.createElement("div");
@@ -141,6 +156,7 @@
             // "most reviews"
             var mostReviews = document.createElement("a");
             mostReviews.href = "javascript:window.sortByMostReviews()";
+            mostReviews.classList.add("mostReviews");
             var myStrong = document.createElement("strong");
             myStrong.innerText = "Most Reviews"
             mostReviews.appendChild(myStrong);
@@ -148,6 +164,7 @@
             // "cheaper than"
             var cheaperThan = document.createElement("a");
             cheaperThan.href = "javascript:window.cheaperThan()";
+            cheaperThan.classList.add("cheaperThan");
             cheaperThan.innerText = "Cheaper than"
 
             // inject them
@@ -157,32 +174,24 @@
             mySpan.innerHTML += "&nbsp;&nbsp;|";
             myDiv.appendChild(mySpan);
             myLabel.appendChild(myDiv);
-            elem.prepend(myLabel);
-
-            clearInterval(interval);
-            return;
+            topRightNav.prepend(myLabel);
         }
 
-        // determine serval button states (including which page the user's on)
-        var serval = document.getElementById("serval-button");
+        // add ServalTracker button(s) to the page
+        var productPage = (document.getElementsByClassName("pdp").length > 0);
         var variantProductPage = (document.getElementsByClassName("buybox-actions-module_variants-actions-container_lgTZH").length > 0);
-        var wishlistPage = (document.getElementsByClassName("detail-module_wishlist-wrapper_3alXg").length > 0);
-        var cartPage = (document.getElementsByClassName("cart").length > 0);
-
-        // inject Serval Tracker button on the Product page (which has a "wish" action button on it)
         var sku = false;
-        var buttons = document.getElementsByClassName("action-wish")[0];
-        if (buttons && !serval) {
+
+        if (productPage && !document.getElementById("serval-button")) {
             sku = findSku();
             if (sku) {
+                var singleProductButtons = document.getElementsByClassName("action-wish")[0];
                 var servalButton = makeServalButton(sku);
-                // try and line up the serval icon with the wishlist heart icon:
-                servalButton.style.paddingRight = "18%"
-                buttons.appendChild(servalButton);
+                servalButton.style.paddingRight = "18%"; // try and line up the serval icon with the wishlist heart icon:
+                singleProductButtons.appendChild(servalButton);
             }
-        } else {
-          // variable-size item (eg: clothing)?
-          if (variantProductPage && !document.getElementById("serval-variant-button")) {
+
+        } else if (variantProductPage && !document.getElementById("serval-button")) {
             sku = findSku();
             if (sku) {
                 var destination = document.getElementsByClassName("buybox-actions")[0].firstChild;
@@ -190,30 +199,54 @@
                 servalVariantButton.id = "serval-variant-button";
                 destination.appendChild(servalVariantButton);
             }
-          }
-        }
 
-        // inject Serval Tracker button on the Wishlist page
-        if (wishlistPage && !serval) {
+        } else {
+            // add Serval button to search/category/deals pages
             addProductsFromAnchor(function(product, sku) {
-                var servalButton = makeServalButton(sku);
-                var destination = product.parentElement.lastChild.lastChild.lastChild.lastChild;
-                destination.appendChild(servalButton);
-            });
-        }
+                var wishlistPage = (document.getElementsByClassName("detail-module_wishlist-wrapper_3alXg").length > 0);
+                var cartPage = (document.getElementsByClassName("cart").length > 0);
+                var isListView = product.parentElement.classList.contains("listing-card");
+                var isGridView = product.parentElement.classList.contains("product-card");
+                var isHomeOrSpecialPage = (isGridView && (product.parentElement.childElementCount === 4));
 
-        // inject Serval Tracker text link on the Cart page
-        if (cartPage && !serval) {
-            addProductsFromAnchor(function(product, sku) {
-                var button = document.createElement("button");
-                button.classList.add("button");
-                button.classList.add("clear");
-                button.id = "serval-button"
-                button.innerHTML = '<img src="https://www.google.com/s2/favicons?domain=servaltracker.com">&nbsp;Serval Tracker';
-                button.addEventListener("click", function() {
-                    window.open("https://www.servaltracker.com/products/" + sku + "/", "_blank")
-                });
-                product.parentElement.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.appendChild(button);
+                if (product.getAttribute("has-serval") !== "true") {
+                    var destination = "";
+                    var servalButton = false;
+
+                    if (isHomeOrSpecialPage) {
+                        // home page and promotional pages are missing the "wishlist" div for our round button
+                        var wishlistDiv = document.createElement("div");
+                        wishlistDiv.classList.add("product-card-module_wishlist-action_3PyVy");
+                        servalButton = makeRoundServalButton(sku);
+                        wishlistDiv.appendChild(servalButton);
+                        product.parentElement.appendChild(wishlistDiv);
+
+                    } else if (isGridView) {
+                        servalButton = makeRoundServalButton(sku);
+                        product.parentElement.childNodes[2].appendChild(servalButton);
+                    } else if (wishlistPage) {
+                        servalButton = makeServalButton(sku);
+                        destination = product.parentElement.lastChild.lastChild.lastChild.lastChild;
+                        destination.appendChild(servalButton);
+
+                    } else if (cartPage) {
+                        var button = document.createElement("button");
+                        button.classList.add("button");
+                        button.classList.add("clear");
+                        button.id = "serval-button"
+                        button.innerHTML = '<img src="https://www.google.com/s2/favicons?domain=servaltracker.com">&nbsp;Serval Tracker';
+                        button.addEventListener("click", function() {
+                            window.open("https://www.servaltracker.com/products/" + sku + "/", "_blank")
+                        });
+                        product.parentElement.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.lastChild.appendChild(button);
+
+                    } else if (isListView) {
+                        servalButton = makeServalButton(sku);
+                        product.parentElement.childNodes[1].childNodes[2].children[1].appendChild(servalButton);
+                    }
+
+                    product.setAttribute("has-serval", "true");
+                }
             });
         }
     }, 1000)
