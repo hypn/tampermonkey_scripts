@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.6
+// @version      0.7
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -123,10 +123,12 @@
 
     // attempts to find the sku for the current product page
     function findSku() {
+        var i;
+        var temp;
         var sku = false;
         var anchors = document.getElementsByTagName("a");
-        for (var i=0; i<anchors.length; i++) {
-            var temp = anchors[i];
+        for (i=0; i<anchors.length; i++) {
+            temp = anchors[i];
 
             if ((temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1) && (temp.href.indexOf('/description') > -1)) {
                 let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
@@ -134,6 +136,32 @@
                 if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
                     sku = parts[parts.length - 1];
                 }
+            }
+        }
+
+        // if user is not logged in? or product doesn't have "Product Info" "Description" tabs?
+        if (!sku) {
+            for (i=0; i<anchors.length; i++) {
+                temp = anchors[i];
+
+                if ((temp.href.indexOf('login?returnTo=') > -1) && ((temp.href.indexOf('/PL') > -1) || (temp.href.indexOf('%2FPL') > -1))) {
+                    let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
+                    parts = parts[parts.length - 1].split('%2F');
+                    let possibleSku = parts[parts.length - 1].split("?")[0];
+                    if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
+                        sku = parts[parts.length - 1];
+                    }
+                }
+            }
+        }
+
+        // new layout changes for single product page? :/
+        if (!sku) {
+            temp = document.querySelectorAll('[data-react-link="true"]')[0];
+            let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
+            let possibleSku = parts[parts.length - 1].split("?")[0];
+            if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
+                sku = parts[parts.length - 1];
             }
         }
         return sku;
@@ -185,10 +213,10 @@
         if (productPage && !document.getElementById("serval-button")) {
             sku = findSku();
             if (sku) {
-                var singleProductButtons = document.getElementsByClassName("action-wish")[0];
+                var singleProductButtons = document.getElementsByClassName("action-wish");
                 var servalButton = makeServalButton(sku);
                 servalButton.style.paddingRight = "18%"; // try and line up the serval icon with the wishlist heart icon:
-                singleProductButtons.appendChild(servalButton);
+                singleProductButtons[singleProductButtons.length-1].appendChild(servalButton);
             }
 
         } else if (variantProductPage && !document.getElementById("serval-button")) {
