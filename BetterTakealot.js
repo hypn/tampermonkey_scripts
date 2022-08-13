@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.7
+// @version      0.8
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -126,15 +126,38 @@
         var i;
         var temp;
         var sku = false;
+        let possibleSku = "";
         var anchors = document.getElementsByTagName("a");
-        for (i=0; i<anchors.length; i++) {
-            temp = anchors[i];
 
-            if ((temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1) && (temp.href.indexOf('/description') > -1)) {
-                let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
-                let possibleSku = parts[parts.length - 1].split("?")[0];
-                if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
-                    sku = parts[parts.length - 1];
+        // use poduct's "reviews" link
+        temp = document.getElementsByClassName('reviews');
+        if (temp.length > 0) {
+            temp = document.getElementsByClassName('reviews')[0].firstChild
+            if (temp.length > 0) {
+                possibleSku = temp.href.split('PLID')[1].split("?")[0].split('#')[0];
+                if ((possibleSku.length > 2) && (possibleSku.length < 18)) {
+                    sku = "PLID" + possibleSku;
+                }
+            }              
+        }
+
+        if (!sku) {
+            for (i=0; i<anchors.length; i++) {
+                temp = anchors[i];
+
+                if (!sku && (temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PLID') > -1) && (temp.href.indexOf('#') > -1)) {
+                    possibleSku = temp.href.split('PLID')[1].split("?")[0].split('#')[0];
+                    if ((possibleSku.length > 2) && (possibleSku.length < 18)) {
+                        sku = "PLID" + possibleSku;
+                    }
+                }
+
+                if (!sku && (temp.href.indexOf('returnTo') == -1) && (temp.href.indexOf('PL') > -1) && (temp.href.indexOf('/description') > -1)) {
+                    let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
+                    possibleSku = parts[parts.length - 1].split("?")[0];
+                    if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
+                        sku = parts[parts.length - 1];
+                    }
                 }
             }
         }
@@ -147,7 +170,7 @@
                 if ((temp.href.indexOf('login?returnTo=') > -1) && ((temp.href.indexOf('/PL') > -1) || (temp.href.indexOf('%2FPL') > -1))) {
                     let parts = temp.href.replace('/description', '').replace('/product-information', '').split('/');
                     parts = parts[parts.length - 1].split('%2F');
-                    let possibleSku = parts[parts.length - 1].split("?")[0];
+                    possibleSku = parts[parts.length - 1].split("?")[0];
                     if ((possibleSku.indexOf('PL') === 0) && (possibleSku.length < 18)) {
                         sku = parts[parts.length - 1];
                     }
@@ -164,6 +187,7 @@
                 sku = parts[parts.length - 1];
             }
         }
+
         return sku;
     }
 
@@ -213,7 +237,7 @@
         if (productPage && !document.getElementById("serval-button")) {
             sku = findSku();
             if (sku) {
-                var singleProductButtons = document.getElementsByClassName("action-wish");
+                var singleProductButtons = document.getElementsByClassName("buybox-actions");
                 var servalButton = makeServalButton(sku);
                 servalButton.style.paddingRight = "18%"; // try and line up the serval icon with the wishlist heart icon:
                 singleProductButtons[singleProductButtons.length-1].appendChild(servalButton);
