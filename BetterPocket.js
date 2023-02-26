@@ -3,7 +3,7 @@
 // @namespace    https://getpocket.com/
 // @version      0.1
 // @description  Link directly to external site
-// @author       You
+// @author       HypnZA
 // @match        https://getpocket.com/*
 // @icon         https://www.google.com/s2/favicons?domain=getpocket.com
 // @grant        none
@@ -14,21 +14,27 @@ let running = false;
 function fixLinks() {
     if (!running) {
         running = true;
-        var results = document.getElementsByClassName("publisher");
 
+        var results = document.getElementsByClassName("list")
         // replace each saved item and change the link to the external url
         for (var i=0; i<results.length; i++) {
             var elem = results[i];
-            elem.classList.remove("publisher");
-
-            var link = elem.href.replace("?utm_source=pocket_mylist", "?").replace("&utm_source=pocket_mylist", "&").replace("?&", "?");
-            var target = elem.parentElement.parentElement.firstElementChild.firstElementChild;
-            if (target) {
-                elem.parentElement.parentElement.firstElementChild.firstElementChild.href = link;
-            } else {
-                console.log('failed to find target for link ' + link);
+            if (elem.getElementsByTagName("a").length == 3) {
+                var link = elem.getElementsByTagName("a")[2].getAttribute("href");
+                if (link != "") {
+                    var temp;
+                    temp = elem.getElementsByTagName("a")[0];
+                    temp.setAttribute("href", link)
+                    temp = elem.getElementsByTagName("a")[1];
+                    temp.setAttribute("href", link)
+                }
             }
         }
+
+        document.querySelectorAll('[data-cy="Favorite"]').forEach(favorite => favorite.remove());
+        document.querySelectorAll('[data-cy="Tag"]').forEach(favorite => favorite.remove());
+        document.querySelectorAll('[data-cy="Share"]').forEach(favorite => favorite.remove());
+        document.querySelectorAll('[data-cy="Archive"]').forEach(favorite => favorite.remove());
 
         running = false;
     }
