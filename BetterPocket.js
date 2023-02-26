@@ -22,6 +22,7 @@ function fixLinks() {
             if (elem.getElementsByTagName("a").length == 3) {
                 var link = elem.getElementsByTagName("a")[2].getAttribute("href");
                 if (link != "") {
+                    link = link.replace("?utm_source=pocket_saves", "?").replace("&utm_source=pocket_saves", "");
                     var temp;
                     temp = elem.getElementsByTagName("a")[0];
                     temp.setAttribute("href", link)
@@ -35,6 +36,7 @@ function fixLinks() {
         document.querySelectorAll('[data-cy="Tag"]').forEach(favorite => favorite.remove());
         document.querySelectorAll('[data-cy="Share"]').forEach(favorite => favorite.remove());
         document.querySelectorAll('[data-cy="Archive"]').forEach(favorite => favorite.remove());
+        // footer-actions
 
         running = false;
     }
