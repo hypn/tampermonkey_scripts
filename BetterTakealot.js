@@ -73,7 +73,7 @@
           var reviews = elem.getElementsByClassName("rating-module_review-count_3g6zO")[0] ? parseInt(elem.getElementsByClassName("rating-module_review-count_3g6zO")[0].innerText.replace(' (', '').replace(')', '')) : 0;
 
           // ignore star rating of items with too few reviews
-          if ((stars != 0) && ((stars < 4) || (reviews < 3))) {
+          if ((stars < 4) || (reviews < 3)) {
             elem.parentElement.removeChild(elem);
           }
         }
