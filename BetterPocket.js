@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterPocket
 // @namespace    https://getpocket.com/
-// @version      0.1
+// @version      0.2
 // @description  Link directly to external site
 // @author       HypnZA
 // @match        https://getpocket.com/*
@@ -15,7 +15,15 @@ function fixLinks() {
     if (!running) {
         running = true;
 
+        // lookup items by different class names, depending on the view mode
         var results = document.getElementsByClassName("list")
+        if (results.length == 0) {
+          results = document.getElementsByClassName("showExcerpt")
+        }
+        if (results.length == 0) {
+          results = document.getElementsByClassName("grid")
+        }
+
         // replace each saved item and change the link to the external url
         for (var i=0; i<results.length; i++) {
             var elem = results[i];
