@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.8
+// @version      0.9
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -53,6 +53,29 @@
             if (parent) {
                 parent.appendChild(sorted[i].elem);
             }
+        }
+
+        // force images to reload
+        window.scrollBy(1,1);
+        window.scrollBy(-1,-1);
+    }
+
+    // hide items with too low of a star rating
+    window.removeLessThanFourStars = function() {
+        var i=0;
+
+        // find all of the search results
+        var results = document.querySelectorAll(".listings-container > .grid-x > .cell");
+
+        for (i=0; i<results.length; i++) {
+          var elem = results[i];
+          var stars = elem.getElementsByClassName("rating-module_rating-wrapper_3Cogb")[0] ? parseFloat(elem.getElementsByClassName("rating-module_rating-wrapper_3Cogb")[0].innerText.split("(")[0]) : 0;
+          var reviews = elem.getElementsByClassName("rating-module_review-count_3g6zO")[0] ? parseInt(elem.getElementsByClassName("rating-module_review-count_3g6zO")[0].innerText.replace(' (', '').replace(')', '')) : 0;
+
+          // ignore star rating of items with too few reviews
+          if ((stars != 0) && ((stars < 4) || (reviews < 3))) {
+            elem.parentElement.removeChild(elem);
+          }
         }
 
         // force images to reload
@@ -138,7 +161,7 @@
                 if ((possibleSku.length > 2) && (possibleSku.length < 18)) {
                     sku = "PLID" + possibleSku;
                 }
-            }              
+            }
         }
 
         if (!sku) {
@@ -213,6 +236,13 @@
             myStrong.innerText = "Most Reviews"
             mostReviews.appendChild(myStrong);
 
+            var moreThan4Stars = document.createElement("a");
+            moreThan4Stars.href = "javascript:window.removeLessThanFourStars()";
+            moreThan4Stars.classList.add("moreThan4Stars");
+            var myStrong2 = document.createElement("strong");
+            myStrong2.innerText = ">4 Stars"
+            moreThan4Stars.appendChild(myStrong2);
+
             // "cheaper than"
             var cheaperThan = document.createElement("a");
             cheaperThan.href = "javascript:window.cheaperThan()";
@@ -221,6 +251,8 @@
 
             // inject them
             mySpan.appendChild(cheaperThan);
+            mySpan.innerHTML += "&nbsp;&nbsp;|&nbsp;&nbsp;";
+            mySpan.appendChild(moreThan4Stars);
             mySpan.innerHTML += "&nbsp;&nbsp;|&nbsp;&nbsp;";
             mySpan.appendChild(mostReviews);
             mySpan.innerHTML += "&nbsp;&nbsp;|";
