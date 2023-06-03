@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      0.9
+// @version      1.0
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -17,7 +17,7 @@
         var i=0;
 
         // find all of the search results
-        var results = document.querySelectorAll(".listings-container > .grid-x > .cell");
+        var results = document.querySelectorAll(".listings-container-module_listings-container_AC4LI > .grid-x > .cell");
 
         // sort them by number of reviews
         var array = [];
@@ -65,7 +65,7 @@
         var i=0;
 
         // find all of the search results
-        var results = document.querySelectorAll(".listings-container > .grid-x > .cell");
+        var results = document.querySelectorAll(".listings-container-module_listings-container_AC4LI > .grid-x > .cell");
 
         for (i=0; i<results.length; i++) {
           var elem = results[i];
