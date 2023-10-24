@@ -25,7 +25,7 @@
                 var elem = elements[i];
                 array.push({
                     elem: elem,
-                    value: parseFloat(elem.getElementsByClassName("fs-base")[1].textContent.replaceAll("R", "").replaceAll("&nbsp;", "").replace(",", ".").replace(/\s/g,'') || 0)
+                    value: parseFloat(elem.getElementsByClassName("fs-base")[1].textContent.replaceAll("R", "").replaceAll("&nbsp;", "").replaceAll(" ", "").replace(",", ".").replace(/\s/g,'') || 0)
                 });
                 parent.removeChild(elem);
             }
