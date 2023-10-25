@@ -124,7 +124,7 @@
         button.id = "serval-button"
         button.target = "_blank";
         button.href = "https://www.servaltracker.com/products/" + sku + "/";
-        button.innerHTML = '<img src="https://www.google.com/s2/favicons?domain=servaltracker.com">&nbsp;Serval Tracker';
+        button.innerHTML = '<img src="https://www.google.com/s2/favicons?domain=www.servaltracker.com">&nbsp;Serval Tracker';
         button.classList.add("button");
         button.classList.add("shade-gray");
         button.style.width = "100%";
@@ -140,7 +140,7 @@
         roundButton.classList.add("expanded");
         roundButton.classList.add("icon-only");
         roundButton.classList.add("add-to-wishlist-button-module_wishlist-button_1oKrg");
-        roundButton.innerHTML = '<a href="https://www.servaltracker.com/products/' + sku + '/" target="_blank"><img src="https://www.google.com/s2/favicons?domain=servaltracker.com"></a>';
+        roundButton.innerHTML = '<a href="https://www.servaltracker.com/products/' + sku + '/" target="_blank"><img src="https://www.google.com/s2/favicons?domain=www.servaltracker.com"></a>';
         return roundButton;
     }
 
