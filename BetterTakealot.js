@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BetterTakealot
 // @namespace    https://www.takealot.com/
-// @version      1.0
+// @version      1.1
 // @description  Adds some new features to takealot.com
 // @author       Hypn
 // @match        https://www.takealot.com/*
@@ -318,7 +318,7 @@
                         button.classList.add("button");
                         button.classList.add("clear");
                         button.id = "serval-button"
-                        button.innerHTML = '<img src="https://www.google.com/s2/favicons?domain=servaltracker.com">&nbsp;Serval Tracker';
+                        button.innerHTML = '<img src="https://www.google.com/s2/favicons?domain=www.servaltracker.com">&nbsp;Serval Tracker';
                         button.addEventListener("click", function() {
                             window.open("https://www.servaltracker.com/products/" + sku + "/", "_blank")
                         });
